@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 type GuestBannerProps = {
   analysesUsed: number;
@@ -8,6 +9,7 @@ type GuestBannerProps = {
 };
 
 export default function GuestBanner({ analysesUsed, analysesLimit }: GuestBannerProps) {
+  const t = useTranslations('GuestBanner');
   const remaining = Math.max(0, analysesLimit - analysesUsed);
 
   return (
@@ -30,27 +32,29 @@ export default function GuestBanner({ analysesUsed, analysesLimit }: GuestBanner
     fontSize: 13,
     color: "#e0f2fe",
   }}>
-      <span>
-        <strong>Mode démo</strong> — {remaining} analyse{remaining !== 1 ? "s" : ""} restante
-        {remaining !== 1 ? "s" : ""} aujourd&apos;hui · point GPS · occupation du sol · 3 mois max.
-      </span>
-      <Link
-        href="/register"
-        style={{
-          padding: "6px 14px",
-          borderRadius: 8,
-          background: "linear-gradient(135deg,#0ea5e9,#6366f1)",
-          color: "#fff",
-          fontWeight: 600,
-          textDecoration: "none",
-          fontSize: 12,
-        }}
-      >
-        Compte gratuit → 10 analyses/mois
-      </Link>
-      <Link href="/login" style={{ color: "#7dd3fc", fontSize: 12 }}>
-        Déjà inscrit ?
-      </Link>
+      <div>
+        <strong style={{ color: "#fff" }}>{t('demo_mode')}</strong> — {t('demo_desc')}
+      </div>
+      
+      <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+        <Link 
+          href="/register" 
+          style={{ 
+            background: "linear-gradient(135deg, #0ea5e9, #6366f1)",
+            padding: "4px 12px",
+            borderRadius: 6,
+            color: "#fff",
+            textDecoration: "none",
+            fontWeight: 600,
+            fontSize: 13
+          }}
+        >
+          {t('free_account')}
+        </Link>
+        <div style={{ fontSize: 13, color: "rgba(255,255,255,0.7)" }}>
+          <Link href="/login" style={{ color: "#38bdf8", textDecoration: "none", fontWeight: 600 }}>{t('already_registered')}</Link>
+        </div>
+      </div>
     </div>
   );
 }

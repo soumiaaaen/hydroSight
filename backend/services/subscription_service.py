@@ -15,6 +15,7 @@ from config.plans import (
     is_guest_principal,
     normalize_plan,
 )
+from config.roles import USER_ROLE_USER, UserRole, normalize_user_role
 
 # In-memory fallback when Supabase is unavailable (dev)
 _guest_usage_memory: dict[tuple[str, str], int] = {}
@@ -36,6 +37,26 @@ class SubscriptionService:
             "Content-Type": "application/json",
             "Prefer": "return=representation",
         }
+
+    def get_user_role(self, user_id: str) -> UserRole:
+        if is_guest_principal(user_id):
+            return USER_ROLE_USER
+
+        if not self.configured:
+            return USER_ROLE_USER
+
+        url = f"{self.base_url}/rest/v1/profiles"
+        params = {"id": f"eq.{user_id}", "select": "role"}
+
+        with httpx.Client(timeout=10.0) as client:
+            r = client.get(url, headers=self._headers(), params=params)
+            r.raise_for_status()
+            rows = r.json()
+
+        if not rows:
+            return USER_ROLE_USER
+
+        return normalize_user_role(rows[0].get("role"))
 
     def get_user_plan(self, principal_id: str) -> str:
         if is_guest_principal(principal_id):

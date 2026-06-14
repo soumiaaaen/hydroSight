@@ -1,11 +1,12 @@
 "use client";
 
-import { MapContainer, TileLayer, useMapEvents, useMap, GeoJSON } from "react-leaflet";
+import { MapContainer, TileLayer, useMapEvents, useMap, GeoJSON, CircleMarker, Tooltip } from "react-leaflet";
 import { useState, useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
 import "leaflet-draw";
+import { useTranslations } from "next-intl";
 import MapLegend from "./MapLegend";
 import { getApiBaseUrl } from "@/lib/apiBase";
 
@@ -31,10 +32,27 @@ const landClasses: Record<number, string> = {
   80: "Water 🌊",
 };
 
-function ClickHandler({ setInfo, activeModule, activeMode, setZoneSelection }: any) {
+const GUEST_MARKERS = [
+  { lat: 35.7595, lon: -5.8340, label: "Point Démo (Tanger)" },
+  { lat: 34.6814, lon: -1.9086, label: "Point Démo (Oujda)" },
+  { lat: 34.0209, lon: -6.8416, label: "Point Démo (Rabat)" },
+  { lat: 33.5731, lon: -7.5898, label: "Point Démo (Casablanca)" },
+  { lat: 34.0331, lon: -5.0003, label: "Point Démo (Fès)" },
+  { lat: 32.3373, lon: -6.3498, label: "Point Démo (Béni Mellal)" },
+  { lat: 31.6295, lon: -7.9811, label: "Point Démo (Marrakech)" },
+  { lat: 30.4278, lon: -9.5981, label: "Point Démo (Agadir)" },
+  { lat: 31.9314, lon: -4.4244, label: "Point Démo (Errachidia)" },
+  { lat: 27.1253, lon: -13.1625, label: "Point Démo (Laayoune)" },
+];
+
+function ClickHandler({ setInfo, activeModule, activeMode, setZoneSelection, isGuest }: any) {
   useMapEvents({
     click(e) {
       if (activeMode === "point") {
+        if (isGuest) {
+          // Block clicking on map for point selection in demo mode
+          return;
+        }
         setZoneSelection({
           granularite: "point",
           lat: e.latlng.lat,
@@ -157,9 +175,11 @@ type MapProps = {
   analysisStatus: string | null;
   resolvedGeojson: any | null;
   activeModule: string;
+  isGuest?: boolean;
 };
 
-export default function Map({ activeMode, setZoneSelection, analysisStatus, resolvedGeojson, activeModule }: MapProps) {
+export default function Map({ activeMode, setZoneSelection, analysisStatus, resolvedGeojson, activeModule, isGuest }: MapProps) {
+  const t = useTranslations('Map');
   const [info, setInfo] = useState<any>(null);
 
   const [ndviUrl, setNdviUrl] = useState<string | null>(null);
@@ -303,24 +323,73 @@ export default function Map({ activeMode, setZoneSelection, analysisStatus, reso
         {activeModule === "gw" && gwsaUrl && <TileLayer url={gwsaUrl} />}
         {activeModule === "sw" && waterExtentUrl && <TileLayer url={waterExtentUrl} />}
 
-        <ClickHandler setInfo={setInfo} activeModule={activeModule} activeMode={activeMode} setZoneSelection={setZoneSelection} />
+        <ClickHandler setInfo={setInfo} activeModule={activeModule} activeMode={activeMode} setZoneSelection={setZoneSelection} isGuest={isGuest} />
         
+        {isGuest && activeMode === "point" && GUEST_MARKERS.map((pt, i) => (
+          <CircleMarker
+            key={i}
+            center={[pt.lat, pt.lon]}
+            radius={8}
+            pathOptions={{ color: "#0ea5e9", fillColor: "#0ea5e9", fillOpacity: 0.6 }}
+            eventHandlers={{
+              click: () => {
+                setZoneSelection({
+                  granularite: "point",
+                  lat: pt.lat,
+                  lon: pt.lon,
+                  label: pt.label,
+                });
+              }
+            }}
+          />
+        ))}
+
         <DrawControl activeMode={activeMode} setZoneSelection={setZoneSelection} />
 
         {activeMode === "province" && provincesGeojson && (
           <GeoJSON
             data={provincesGeojson}
-            style={{ color: "#6b7280", weight: 1, fillOpacity: 0.2 }}
+            style={(feature: any) => {
+              let isAllowedGuest = false;
+              if (isGuest) {
+                let name = feature.properties.ADM2_NAME;
+                if (name === "Administrative unit not available" || !name) {
+                  name = feature.properties.ADM1_NAME;
+                }
+                if (name === "Béni Mellal") isAllowedGuest = true;
+              }
+              return {
+                color: isAllowedGuest ? "#22c55e" : "#6b7280",
+                weight: isAllowedGuest ? 2 : 1,
+                fillOpacity: isAllowedGuest ? 0.25 : 0.2
+              };
+            }}
             onEachFeature={(feature, layer) => {
               layer.on({
                 click: () => onProvinceClick(feature),
                 mouseover: (e) => {
                    const l = e.target;
-                   l.setStyle({ weight: 2, color: '#3b82f6', fillOpacity: 0.5 });
+                   let isAllowedGuest = false;
+                   if (isGuest) {
+                     let name = feature.properties.ADM2_NAME;
+                     if (name === "Administrative unit not available" || !name) {
+                       name = feature.properties.ADM1_NAME;
+                     }
+                     if (name === "Béni Mellal") isAllowedGuest = true;
+                   }
+                   l.setStyle({ weight: 2, color: isAllowedGuest ? '#16a34a' : '#3b82f6', fillOpacity: 0.5 });
                 },
                 mouseout: (e) => {
                    const l = e.target;
-                   l.setStyle({ weight: 1, color: '#6b7280', fillOpacity: 0.2 });
+                   let isAllowedGuest = false;
+                   if (isGuest) {
+                     let name = feature.properties.ADM2_NAME;
+                     if (name === "Administrative unit not available" || !name) {
+                       name = feature.properties.ADM1_NAME;
+                     }
+                     if (name === "Béni Mellal") isAllowedGuest = true;
+                   }
+                   l.setStyle({ weight: isAllowedGuest ? 2 : 1, color: isAllowedGuest ? '#22c55e' : '#6b7280', fillOpacity: isAllowedGuest ? 0.25 : 0.2 });
                 }
               });
             }}
@@ -330,17 +399,29 @@ export default function Map({ activeMode, setZoneSelection, analysisStatus, reso
         {activeMode === "region" && regionsGeojson && (
           <GeoJSON
             data={regionsGeojson}
-            style={{ color: "#4b5563", weight: 2, fillOpacity: 0.1 }}
+            style={(feature: any) => {
+              let name = feature.properties.ADM1_NAME;
+              let isAllowedGuest = isGuest && (name === "Tadla-Azilal" || name === "Tadla Azilal" || name === "Tadla - Azilal");
+              return {
+                color: isAllowedGuest ? "#22c55e" : "#4b5563",
+                weight: isAllowedGuest ? 3 : 2,
+                fillOpacity: isAllowedGuest ? 0.25 : 0.1
+              };
+            }}
             onEachFeature={(feature, layer) => {
               layer.on({
                 click: () => onRegionClick(feature),
                 mouseover: (e) => {
                    const l = e.target;
-                   l.setStyle({ weight: 3, color: '#3b82f6', fillOpacity: 0.4 });
+                   let name = feature.properties.ADM1_NAME;
+                   let isAllowedGuest = isGuest && (name === "Tadla-Azilal" || name === "Tadla Azilal" || name === "Tadla - Azilal");
+                   l.setStyle({ weight: 3, color: isAllowedGuest ? '#16a34a' : '#3b82f6', fillOpacity: 0.4 });
                 },
                 mouseout: (e) => {
                    const l = e.target;
-                   l.setStyle({ weight: 2, color: '#4b5563', fillOpacity: 0.1 });
+                   let name = feature.properties.ADM1_NAME;
+                   let isAllowedGuest = isGuest && (name === "Tadla-Azilal" || name === "Tadla Azilal" || name === "Tadla - Azilal");
+                   l.setStyle({ weight: isAllowedGuest ? 3 : 2, color: isAllowedGuest ? '#22c55e' : '#4b5563', fillOpacity: isAllowedGuest ? 0.25 : 0.1 });
                 }
               });
             }}

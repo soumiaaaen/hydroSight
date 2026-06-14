@@ -1,10 +1,14 @@
 "use client";
 
+import React from "react";
+import { useTranslations } from "next-intl";
+
 type MapLegendProps = {
   activeModule: string; // "gw" | "sw" | "lu"
 };
 
 export default function MapLegend({ activeModule }: MapLegendProps) {
+  const t = useTranslations('Map');
   return (
     <div
       style={{
@@ -22,25 +26,22 @@ export default function MapLegend({ activeModule }: MapLegendProps) {
         pointerEvents: "none",
       }}
     >
-      <div style={{ marginBottom: activeModule !== "" ? "12px" : "0" }}>
-        <h4 style={{ margin: "0 0 8px 0", fontSize: "11px", fontWeight: "bold", letterSpacing: "0.5px", color: "#9CA3AF" }}>STATUT HYDRIQUE</h4>
+      <div style={{ padding: "12px 16px" }}>
+        <div style={{ fontSize: "10px", fontWeight: "700", letterSpacing: "0.05em", color: "#9ca3af", marginBottom: "8px" }}>
+          {t('legend_water')}
+        </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <div style={{ width: "12px", height: "12px", backgroundColor: "#10B981" }} />
-            <span>ALLOWED — Ressources normales</span>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <div style={{ width: "12px", height: "12px", backgroundColor: "#F59E0B" }} />
-            <span>MODERATED — Stress modéré</span>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <div style={{ width: "12px", height: "12px", backgroundColor: "#EF4444" }} />
-            <span>PROHIBITED — Surexploitation</span>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <div style={{ width: "12px", height: "12px", backgroundColor: "#7F1D1D" }} />
-            <span>CRITICAL — Crise sévère</span>
-          </div>
+          {[
+            { color: "#22c55e", label: `${t('status_allowed')} — ${t('allowed')}` },
+            { color: "#f59e0b", label: `${t('status_moderated')} — ${t('moderated')}` },
+            { color: "#ef4444", label: `${t('status_prohibited')} — ${t('prohibited')}` },
+            { color: "#991b1b", label: `${t('status_critical')} — ${t('critical')}` },
+          ].map((st, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <span style={{ fontSize: "11px", color: "#e5e7eb" }}>{st.label}</span>
+              <span style={{ width: "12px", height: "12px", backgroundColor: st.color, borderRadius: "2px", marginLeft: "12px" }} />
+            </div>
+          ))}
         </div>
       </div>
 
@@ -48,40 +49,23 @@ export default function MapLegend({ activeModule }: MapLegendProps) {
         <>
           <div style={{ height: "1px", backgroundColor: "#374151", margin: "12px 0" }} />
           <div>
-            <h4 style={{ margin: "0 0 8px 0", fontSize: "11px", fontWeight: "bold", letterSpacing: "0.5px", color: "#9CA3AF" }}>OCCUPATION DU SOL</h4>
+            <h4 style={{ margin: "0 0 8px 0", fontSize: "11px", fontWeight: "bold", letterSpacing: "0.5px", color: "#9CA3AF" }}>{t('legend_lu')}</h4>
             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <div style={{ width: "12px", height: "12px", backgroundColor: "#006400" }} />
-                <span>Forêt dense</span>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <div style={{ width: "12px", height: "12px", backgroundColor: "#ffbb22" }} />
-                <span>Arbustes</span>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <div style={{ width: "12px", height: "12px", backgroundColor: "#f096ff" }} />
-                <span>Lande herbacée</span>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <div style={{ width: "12px", height: "12px", backgroundColor: "#fa0000" }} />
-                <span>Terres cultivées</span>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <div style={{ width: "12px", height: "12px", backgroundColor: "#b4b4b4" }} />
-                <span>Zone urbanisée</span>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <div style={{ width: "12px", height: "12px", backgroundColor: "#0096a0" }} />
-                <span>Végétation éparse</span>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <div style={{ width: "12px", height: "12px", backgroundColor: "#0064c8" }} />
-                <span>Eau permanente</span>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <div style={{ width: "12px", height: "12px", backgroundColor: "#fae6a0" }} />
-                <span>Sol nu</span>
-              </div>
+              {[
+                { color: "#22c55e", label: t('forest') },
+                { color: "#84cc16", label: t('shrub') },
+                { color: "#bef264", label: t('grass') },
+                { color: "#eab308", label: t('crop') },
+                { color: "#ef4444", label: t('urban') },
+                { color: "#d1d5db", label: t('sparse') },
+                { color: "#3b82f6", label: t('water') },
+                { color: "#9ca3af", label: t('bare') },
+              ].map((st, i) => (
+                <div key={i} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <div style={{ width: "12px", height: "12px", backgroundColor: st.color }} />
+                  <span>{st.label}</span>
+                </div>
+              ))}
             </div>
           </div>
         </>
@@ -91,12 +75,12 @@ export default function MapLegend({ activeModule }: MapLegendProps) {
         <>
           <div style={{ height: "1px", backgroundColor: "#374151", margin: "12px 0" }} />
           <div>
-            <h4 style={{ margin: "0 0 8px 0", fontSize: "11px", fontWeight: "bold", letterSpacing: "0.5px", color: "#9CA3AF" }}>ANOMALIE SOUTERRAINE (GWSA)</h4>
+            <h4 style={{ margin: "0 0 8px 0", fontSize: "11px", fontWeight: "bold", letterSpacing: "0.5px", color: "#9CA3AF" }}>{t('legend_gw')}</h4>
             <div style={{ background: "linear-gradient(to right, #EF4444, #F9FAFB, #3B82F6)", height: "8px", width: "100%", borderRadius: "4px" }} />
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: "10px", marginTop: "4px", color: "#D1D5DB" }}>
-              <span>Déficit (rouge)</span>
-              <span>Neutre</span>
-              <span>Surplus (bleu)</span>
+              <span>{t('gw_deficit')}</span>
+              <span>{t('gw_neutral')}</span>
+              <span>{t('gw_surplus')}</span>
             </div>
           </div>
         </>
@@ -106,11 +90,11 @@ export default function MapLegend({ activeModule }: MapLegendProps) {
         <>
           <div style={{ height: "1px", backgroundColor: "#374151", margin: "12px 0" }} />
           <div>
-            <h4 style={{ margin: "0 0 8px 0", fontSize: "11px", fontWeight: "bold", letterSpacing: "0.5px", color: "#9CA3AF" }}>SURFACES EN EAU</h4>
+            <h4 style={{ margin: "0 0 8px 0", fontSize: "11px", fontWeight: "bold", letterSpacing: "0.5px", color: "#9CA3AF" }}>{t('legend_sw')}</h4>
             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <div style={{ width: "12px", height: "12px", backgroundColor: "#3B82F6" }} />
-                <span>Eau libre (Sentinel-1 VV &lt; -16 dB)</span>
+                <span>{t('sw_open_water')}</span>
               </div>
             </div>
           </div>

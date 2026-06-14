@@ -5,6 +5,8 @@ import jwt as pyjwt
 import os
 
 from api.guest_auth import decode_guest_token
+from config.roles import USER_ROLE_ADMIN
+from services.subscription_service import subscription_service
 
 security = HTTPBearer()
 SUPABASE_URL = os.getenv("SUPABASE_URL") or os.getenv("NEXT_PUBLIC_SUPABASE_URL")
@@ -63,3 +65,11 @@ def get_user_id(payload: dict = Security(verify_token)) -> str:
             detail="This action requires a registered account.",
         )
     return principal
+
+
+def require_admin(user_id: str = Security(get_user_id)) -> str:
+    """Registered users with profiles.role = admin."""
+    role = subscription_service.get_user_role(user_id)
+    if role != USER_ROLE_ADMIN:
+        raise HTTPException(status_code=403, detail="Admin access required.")
+    return user_id

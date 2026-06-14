@@ -55,6 +55,7 @@ export function usePlan() {
       dateDebut: string;
       dateFin: string;
       bbox?: number[] | null;
+      zoneSelection?: any;
       checkQuota?: boolean;
     }) => {
       return checkPlanAccess({
@@ -64,6 +65,7 @@ export function usePlan() {
         dateDebut: input.dateDebut,
         dateFin: input.dateFin,
         bbox: input.bbox,
+        zoneSelection: input.zoneSelection,
         analysesUsed: input.checkQuota !== false ? analysesUsed : 0,
       });
     },

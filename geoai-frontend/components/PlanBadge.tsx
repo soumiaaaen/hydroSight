@@ -73,27 +73,31 @@ export default function PlanBadge({
           </Link>
         ) : null}
       </div>
-      <div style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 6 }}>
-        Analyses : {analysesUsed} / {analysesLimit}
-        {quotaPeriod === "day" ? " (aujourd'hui)" : ""}
-      </div>
-      <div
-        style={{
-          height: 4,
-          borderRadius: 2,
-          background: "var(--border-color)",
-          overflow: "hidden",
-        }}
-      >
-        <div
-          style={{
-            height: "100%",
-            width: `${pct}%`,
-            background: pct >= 90 ? "#ef4444" : "var(--accent-primary)",
-            transition: "width 0.3s ease",
-          }}
-        />
-      </div>
+      {plan !== "guest" && (
+        <>
+          <div style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 6 }}>
+            Analyses : {analysesUsed} / {analysesLimit}
+            {quotaPeriod === "day" ? " (aujourd'hui)" : ""}
+          </div>
+          <div
+            style={{
+              height: 4,
+              borderRadius: 2,
+              background: "var(--border-color)",
+              overflow: "hidden",
+            }}
+          >
+            <div
+              style={{
+                height: "100%",
+                width: `${pct}%`,
+                background: pct >= 90 ? "#ef4444" : "var(--accent-primary)",
+                transition: "width 0.3s ease",
+              }}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import type { CSSProperties } from "react";
+import { useTranslations } from "next-intl";
 
 type LogoutButtonProps = {
   onClick: () => void;
@@ -11,14 +12,17 @@ type LogoutButtonProps = {
 export default function LogoutButton({
   onClick,
   style,
-  title = "Se déconnecter",
+  title,
 }: LogoutButtonProps) {
+  const tNav = useTranslations('Navigation');
+  const buttonTitle = title || tNav('logout');
+
   return (
     <button
       type="button"
       onClick={onClick}
-      title={title}
-      aria-label={title}
+      title={buttonTitle}
+      aria-label={buttonTitle}
       style={{
         width: 40,
         height: 40,

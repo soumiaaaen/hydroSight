@@ -11,25 +11,29 @@ PLAN_LIMITS: dict[str, dict[str, Any]] = {
     "guest": {
         "label": "Démo",
         "modules": ["lu"],
-        "modes": ["point"],
+        "modes": ["point", "region", "province"],
         "max_bbox_km2": 0,
         "max_months_range": 3,
         "analyses_per_month": 0,
-        "analyses_per_day": 2,
+        "analyses_per_day": 999999,
         "quota_period": "day",
         "pdf_export": False,
         "excel_export": False,
+        "max_regions": 1,
+        "max_provinces": 1,
     },
     "free": {
         "label": "Free",
         "modules": ["lu"],
-        "modes": ["point", "bbox"],
-        "max_bbox_km2": 25,
+        "modes": ["point"],
+        "max_bbox_km2": 0,
         "max_months_range": 6,
         "analyses_per_month": 10,
         "quota_period": "month",
         "pdf_export": False,
         "excel_export": False,
+        "max_regions": 1,
+        "max_provinces": 1,
     },
     "pro": {
         "label": "Pro",
@@ -41,6 +45,8 @@ PLAN_LIMITS: dict[str, dict[str, Any]] = {
         "quota_period": "month",
         "pdf_export": True,
         "excel_export": True,
+        "max_regions": None,
+        "max_provinces": None,
     },
     "premium": {
         "label": "Premium",
@@ -52,12 +58,27 @@ PLAN_LIMITS: dict[str, dict[str, Any]] = {
         "quota_period": "month",
         "pdf_export": True,
         "excel_export": True,
+        "max_regions": None,
+        "max_provinces": None,
+    },
+    "contract": {
+        "label": "Contrat (B2B)",
+        "modules": ["gw", "sw", "lu"],
+        "modes": ["point", "bbox", "province", "region", "national"],
+        "max_bbox_km2": None,
+        "max_months_range": None,
+        "analyses_per_month": 999999,
+        "quota_period": "month",
+        "pdf_export": True,
+        "excel_export": True,
+        "max_regions": None,
+        "max_provinces": None,
     },
 }
 
 
 def normalize_plan(plan: str | None) -> PlanId:
-    if plan in ("guest", "pro", "premium"):
+    if plan in ("guest", "pro", "premium", "contract"):
         return plan
     return "free"
 

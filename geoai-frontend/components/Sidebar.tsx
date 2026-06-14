@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 import hydrosightLogo from "../public/hydrosight-logo.png";
@@ -43,6 +44,7 @@ export default function Sidebar({
   canAnalyzeByPlan,
   planBlockReason,
 }: SidebarProps) {
+  const t = useTranslations('Sidebar');
   const [logoSrc, setLogoSrc] = useState(hydrosightLogo.src);
 
   useEffect(() => {
@@ -74,11 +76,11 @@ export default function Sidebar({
   }, []);
 
   const modes = [
-    { id: "point", label: "Point GPS" },
-    { id: "bbox", label: "Bbox" },
-    { id: "province", label: "Province" },
-    { id: "region", label: "Région" },
-    { id: "national", label: "National" },
+    { id: "point", label: t('point') },
+    { id: "bbox", label: t('bbox') },
+    { id: "province", label: t('province') },
+    { id: "region", label: t('region') },
+    { id: "national", label: t('national') },
   ];
 
   const isValidDate = new Date(dateFin) >= new Date(dateDebut);
@@ -127,12 +129,14 @@ export default function Sidebar({
         />
       </div>
 
-      <PlanBadge
-        plan={plan}
-        analysesUsed={analysesUsed}
-        analysesLimit={analysesLimit}
-        quotaPeriod={PLAN_LIMITS[plan].quotaPeriod}
-      />
+      {plan !== "guest" && (
+        <PlanBadge
+          plan={plan}
+          analysesUsed={analysesUsed}
+          analysesLimit={analysesLimit}
+          quotaPeriod={PLAN_LIMITS[plan].quotaPeriod}
+        />
+      )}
 
       <div>
         <h2
@@ -145,7 +149,7 @@ export default function Sidebar({
             marginBottom: "16px",
           }}
         >
-          1. Sélection de Zone
+          1. {t('title')}
         </h2>
         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
           {modes.map((mode) => {
@@ -158,7 +162,7 @@ export default function Sidebar({
                 title={
                   allowed
                     ? undefined
-                    : "Disponible avec un plan Pro ou Premium — voir Tarifs"
+                    : t('pro_required')
                 }
                 onClick={() => allowed && setActiveMode(mode.id)}
                 style={{
@@ -212,7 +216,7 @@ export default function Sidebar({
               letterSpacing: "0.5px",
             }}
           >
-            Zone active
+            {t('active_zone')}
           </p>
           <p
             style={{
@@ -238,7 +242,7 @@ export default function Sidebar({
             marginBottom: "16px",
           }}
         >
-          2. Période d&apos;Analyse
+          2. {t('period')}
         </h2>
         <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
           <div>
@@ -251,7 +255,7 @@ export default function Sidebar({
                 fontWeight: "500",
               }}
             >
-              Début
+              {t('start')}
             </label>
             <input
               type="date"
@@ -279,7 +283,7 @@ export default function Sidebar({
                 fontWeight: "500",
               }}
             >
-              Fin
+              {t('end')}
             </label>
             <input
               type="date"
@@ -299,12 +303,12 @@ export default function Sidebar({
           </div>
           {!isValidDate && (
             <p style={{ color: "#EF4444", fontSize: "12px", margin: 0, fontWeight: "500" }}>
-              La date de fin doit être après la date de début.
+              {t('date_error')}
             </p>
           )}
           {isValidDate && (
             <p style={{ fontSize: 11, color: "var(--text-muted)", margin: 0 }}>
-              Durée : {monthsBetween(dateDebut, dateFin)} mois
+              {t('duration', { months: monthsBetween(dateDebut, dateFin) })}
             </p>
           )}
         </div>
@@ -325,7 +329,7 @@ export default function Sidebar({
         >
           {planBlockReason}{" "}
           <Link href="/pricing" style={{ color: "var(--accent-primary)" }}>
-            Voir les offres
+            {t('see_offers')}
           </Link>
         </p>
       )}
@@ -363,10 +367,10 @@ export default function Sidebar({
                 animation: "spin 1s linear infinite",
               }}
             />
-            Analyse...
+            {t('analyzing')}
           </span>
         ) : (
-          "Lancer l'analyse spatiale"
+          t('analyze_btn')
         )}
       </button>
     </div>

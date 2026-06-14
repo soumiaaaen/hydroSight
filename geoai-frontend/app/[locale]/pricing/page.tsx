@@ -3,49 +3,54 @@
 import Link from "next/link";
 import { PLAN_LIMITS, PLAN_ORDER, type PlanId } from "@/lib/plans";
 import { usePlan } from "@/hooks/usePlan";
-
-const FEATURE_ROWS: { key: string; label: string; render: (p: PlanId) => string }[] = [
-  {
-    key: "modules",
-    label: "Modules",
-    render: (p) =>
-      PLAN_LIMITS[p].modules.length === 3
-        ? "GW + Surface + Sol"
-        : "Occupation du sol",
-  },
-  {
-    key: "modes",
-    label: "Zones",
-    render: (p) => PLAN_LIMITS[p].modes.join(", "),
-  },
-  {
-    key: "bbox",
-    label: "BBox max.",
-    render: (p) =>
-      PLAN_LIMITS[p].maxBBoxKm2 != null ? `${PLAN_LIMITS[p].maxBBoxKm2} km²` : "Illimité",
-  },
-  {
-    key: "range",
-    label: "Période max.",
-    render: (p) =>
-      PLAN_LIMITS[p].maxMonthsRange != null
-        ? `${PLAN_LIMITS[p].maxMonthsRange} mois`
-        : "Illimitée",
-  },
-  {
-    key: "quota",
-    label: "Analyses / mois",
-    render: (p) => String(PLAN_LIMITS[p].analysesPerMonth),
-  },
-  {
-    key: "pdf",
-    label: "Export PDF",
-    render: (p) => (PLAN_LIMITS[p].pdfExport ? "✓" : "—"),
-  },
-];
+import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { useTranslations } from "next-intl";
 
 export default function PricingPage() {
   const { plan: currentPlan, loading } = usePlan();
+  const t = useTranslations('Pricing');
+  const tNav = useTranslations('Navigation');
+  const tDashboard = useTranslations('Dashboard');
+
+  const FEATURE_ROWS: { key: string; label: string; render: (p: PlanId) => string }[] = [
+    {
+      key: "modules",
+      label: t('modules'),
+      render: (p) =>
+        PLAN_LIMITS[p].modules.length === 3
+          ? `GW + Surface + ${tDashboard('lu').replace('🌿 ', '')}`
+          : tDashboard('lu').replace('🌿 ', ''),
+    },
+    {
+      key: "modes",
+      label: t('zones'),
+      render: (p) => PLAN_LIMITS[p].modes.join(", "),
+    },
+    {
+      key: "bbox",
+      label: t('bbox'),
+      render: (p) =>
+        PLAN_LIMITS[p].maxBBoxKm2 != null ? `${PLAN_LIMITS[p].maxBBoxKm2} km²` : t('unlimited'),
+    },
+    {
+      key: "range",
+      label: t('range'),
+      render: (p) =>
+        PLAN_LIMITS[p].maxMonthsRange != null
+          ? `${PLAN_LIMITS[p].maxMonthsRange} ${t('months')}`
+          : t('unlimited'),
+    },
+    {
+      key: "quota",
+      label: t('quota'),
+      render: (p) => PLAN_LIMITS[p].analysesPerMonth > 1000 ? t('unlimited') : String(PLAN_LIMITS[p].analysesPerMonth),
+    },
+    {
+      key: "pdf",
+      label: t('pdf'),
+      render: (p) => (PLAN_LIMITS[p].pdfExport ? "✓" : "—"),
+    },
+  ];
 
   return (
     <main
@@ -62,39 +67,42 @@ export default function PricingPage() {
         rel="stylesheet"
       />
 
-      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 48 }}>
           <Link href="/" style={{ color: "#38bdf8", textDecoration: "none", fontWeight: 600 }}>
             ← HydroSight
           </Link>
-          <Link
-            href="/dashboard"
-            style={{
-              padding: "10px 20px",
-              borderRadius: 8,
-              background: "linear-gradient(135deg,#0ea5e9,#6366f1)",
-              color: "#fff",
-              textDecoration: "none",
-              fontWeight: 600,
-              fontSize: 14,
-            }}
-          >
-            Tableau de bord
-          </Link>
+          <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+            <LanguageSwitcher />
+            <Link
+              href="/dashboard"
+              style={{
+                padding: "10px 20px",
+                borderRadius: 8,
+                background: "linear-gradient(135deg,#0ea5e9,#6366f1)",
+                color: "#fff",
+                textDecoration: "none",
+                fontWeight: 600,
+                fontSize: 14,
+              }}
+            >
+              {tNav('dashboard')}
+            </Link>
+          </div>
         </div>
 
         <div style={{ textAlign: "center", marginBottom: 56 }}>
           <p style={{ color: "#38bdf8", fontSize: 12, letterSpacing: "0.12em", textTransform: "uppercase" }}>
-            Tarifs
+            {tNav('pricing')}
           </p>
           <h1 style={{ fontSize: 42, fontWeight: 800, margin: "12px 0 16px", letterSpacing: "-0.03em" }}>
-            Choisissez votre plan
+            {t('title')}
           </h1>
           <p style={{ color: "rgba(255,255,255,0.5)", maxWidth: 520, margin: "0 auto", lineHeight: 1.7 }}>
-            Limites alignées sur le coût Earth Engine : zone, période et nombre d&apos;analyses.
-            {!loading && (
+            {t('subtitle')}
+            {!loading && currentPlan && PLAN_LIMITS[currentPlan] && (
               <span style={{ display: "block", marginTop: 8, color: "#7dd3fc" }}>
-                Plan actuel : <strong>{PLAN_LIMITS[currentPlan].label}</strong>
+                {t('current')} : <strong>{currentPlan === 'free' ? t('freePlan') : currentPlan === 'pro' ? t('proPlan') : currentPlan === 'premium' ? t('premiumPlan') : PLAN_LIMITS[currentPlan].label}</strong>
               </span>
             )}
           </p>
@@ -103,7 +111,7 @@ export default function PricingPage() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
+            gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
             gap: 20,
           }}
         >
@@ -139,12 +147,12 @@ export default function PricingPage() {
                       borderRadius: 20,
                     }}
                   >
-                    POPULAIRE
+                    {t('popular')}
                   </span>
                 )}
-                <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 8 }}>{p.label}</h2>
+                <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 8 }}>{planId === 'free' ? t('freePlan') : planId === 'pro' ? t('proPlan') : planId === 'premium' ? t('premiumPlan') : p.label}</h2>
                 <p style={{ fontSize: 28, fontWeight: 700, color: "#38bdf8", marginBottom: 24 }}>
-                  {p.priceMonthly === 0 ? "Gratuit" : p.priceLabel}
+                  {p.priceMonthly === 0 ? t('free') : p.priceLabel}
                 </p>
                 <ul style={{ listStyle: "none", padding: 0, margin: "0 0 24px", fontSize: 14, lineHeight: 2 }}>
                   {FEATURE_ROWS.map((row) => (
@@ -166,7 +174,7 @@ export default function PricingPage() {
                       fontWeight: 600,
                     }}
                   >
-                    Plan actuel
+                    {t('current')}
                   </div>
                 ) : (
                   <button
@@ -190,7 +198,7 @@ export default function PricingPage() {
                       window.location.href = `mailto:support@hydrosight.app?subject=Changement%20de%20plan%20-%20${p.label}`;
                     }}
                   >
-                    Passer à ce plan
+                    {t('upgrade')}
                   </button>
                 )}
               </div>
@@ -207,9 +215,7 @@ export default function PricingPage() {
             lineHeight: 1.7,
           }}
         >
-          En développement : mettez à jour{" "}
-          <code style={{ color: "#7dd3fc" }}>profiles.plan</code> dans Supabase (
-          <code>free</code>, <code>pro</code>, <code>premium</code>) pour tester les limites.
+          {/* Dev note */}
         </p>
       </div>
     </main>

@@ -1,4 +1,4 @@
-export type PlanId = "guest" | "free" | "pro" | "premium";
+export type PlanId = "guest" | "free" | "pro" | "premium" | "contract";
 
 export type QuotaPeriod = "day" | "month";
 
@@ -16,6 +16,8 @@ export type PlanLimits = {
   pdfExport: boolean;
   excelExport: boolean;
   whiteLabel: boolean;
+  maxRegions: number | null;
+  maxProvinces: number | null;
 };
 
 export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
@@ -24,29 +26,33 @@ export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
     priceMonthly: 0,
     priceLabel: "Sans compte",
     modules: ["lu"],
-    modes: ["point"],
+    modes: ["point", "region", "province"],
     maxBBoxKm2: 0,
     maxMonthsRange: 3,
     analysesPerMonth: 0,
-    analysesPerDay: 2,
+    analysesPerDay: 999999,
     quotaPeriod: "day",
     pdfExport: false,
     excelExport: false,
     whiteLabel: false,
+    maxRegions: 1,
+    maxProvinces: 1,
   },
   free: {
     label: "Free",
     priceMonthly: 0,
     priceLabel: "Gratuit",
     modules: ["lu"],
-    modes: ["point", "bbox"],
-    maxBBoxKm2: 25,
+    modes: ["point"],
+    maxBBoxKm2: 0,
     maxMonthsRange: 6,
     analysesPerMonth: 10,
     quotaPeriod: "month",
     pdfExport: false,
     excelExport: false,
     whiteLabel: false,
+    maxRegions: 1,
+    maxProvinces: 1,
   },
   pro: {
     label: "Pro",
@@ -61,6 +67,8 @@ export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
     pdfExport: true,
     excelExport: true,
     whiteLabel: false,
+    maxRegions: null,
+    maxProvinces: null,
   },
   premium: {
     label: "Premium",
@@ -75,13 +83,31 @@ export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
     pdfExport: true,
     excelExport: true,
     whiteLabel: true,
+    maxRegions: null,
+    maxProvinces: null,
+  },
+  contract: {
+    label: "Contrat (B2B)",
+    priceMonthly: null,
+    priceLabel: "Sur devis",
+    modules: ["gw", "sw", "lu"],
+    modes: ["point", "bbox", "province", "region", "national"],
+    maxMonthsRange: null,
+    maxBBoxKm2: null,
+    analysesPerMonth: 999999,
+    quotaPeriod: "month",
+    pdfExport: true,
+    excelExport: true,
+    whiteLabel: true,
+    maxRegions: null,
+    maxProvinces: null,
   },
 };
 
-export const PLAN_ORDER: PlanId[] = ["free", "pro", "premium"];
+export const PLAN_ORDER: PlanId[] = ["free", "pro", "premium", "contract"];
 
 export function normalizePlan(plan: string | null | undefined): PlanId {
-  if (plan === "guest" || plan === "pro" || plan === "premium") return plan;
+  if (plan === "guest" || plan === "pro" || plan === "premium" || plan === "contract") return plan;
   return "free";
 }
 
@@ -136,23 +162,45 @@ export type PlanCheckInput = {
   dateFin: string;
   bbox?: number[] | null;
   analysesUsed: number;
+  zoneSelection?: any;
 };
 
-export function checkPlanAccess(input: PlanCheckInput): { ok: true } | { ok: false; message: string } {
+// Return keys instead of hardcoded strings
+export function checkPlanAccess(input: PlanCheckInput): { ok: true } | { ok: false; messageKey: string; messageParams?: any } {
   const limits = getLimits(input.plan);
 
   if (!limits.modules.includes(input.activeModule as "gw" | "sw" | "lu")) {
     return {
       ok: false,
-      message: `Le module n'est pas inclus dans le plan ${limits.label}. Passez à Pro pour tous les modules.`,
+      messageKey: "ERR_MODULE_NOT_INCLUDED",
+      messageParams: { plan: limits.label }
     };
   }
 
   if (!limits.modes.includes(input.activeMode)) {
     return {
       ok: false,
-      message: `Le mode « ${input.activeMode} » nécessite un plan supérieur (${limits.label} → Pro ou Premium).`,
+      messageKey: "ERR_MODE_NOT_INCLUDED",
+      messageParams: { mode: input.activeMode, plan: limits.label }
     };
+  }
+
+  // Guest specific validation rules
+  if (input.plan === "guest") {
+    if (input.activeMode === "region" && input.zoneSelection?.code !== "Tadla-Azilal" && input.zoneSelection?.code !== "Tadla Azilal" && input.zoneSelection?.code !== "Tadla - Azilal") {
+      return {
+        ok: false,
+        messageKey: "ERR_GUEST_REGION"
+      };
+    }
+    if (input.activeMode === "province" && input.zoneSelection?.code !== "Béni Mellal") {
+      return {
+        ok: false,
+        messageKey: "ERR_GUEST_PROVINCE"
+      };
+    }
+    // Note: For 'point', the UI (Map.tsx) restricts clicks to 10 specific coordinates.
+    // If backend validation is needed, add point coord checks here.
   }
 
   if (limits.maxMonthsRange != null) {
@@ -160,7 +208,8 @@ export function checkPlanAccess(input: PlanCheckInput): { ok: true } | { ok: fal
     if (months > limits.maxMonthsRange) {
       return {
         ok: false,
-        message: `Période max. ${limits.maxMonthsRange} mois sur le plan ${limits.label}. Réduisez la plage ou passez à Pro.`,
+        messageKey: "ERR_MAX_MONTHS",
+        messageParams: { max: limits.maxMonthsRange, plan: limits.label }
       };
     }
   }
@@ -169,7 +218,7 @@ export function checkPlanAccess(input: PlanCheckInput): { ok: true } | { ok: fal
     if (limits.maxBBoxKm2 === 0) {
       return {
         ok: false,
-        message: "Le mode Bbox nécessite un compte gratuit. Créez un compte pour continuer.",
+        messageKey: "ERR_BBOX_GUEST"
       };
     }
     if (limits.maxBBoxKm2 != null && input.bbox) {
@@ -177,7 +226,8 @@ export function checkPlanAccess(input: PlanCheckInput): { ok: true } | { ok: fal
       if (area != null && area > limits.maxBBoxKm2) {
         return {
           ok: false,
-          message: `BBox trop grande (${area.toFixed(1)} km², max ${limits.maxBBoxKm2} km² sur Free).`,
+          messageKey: "ERR_BBOX_TOO_LARGE",
+          messageParams: { area: area.toFixed(1), max: limits.maxBBoxKm2 }
         };
       }
     }
@@ -185,14 +235,10 @@ export function checkPlanAccess(input: PlanCheckInput): { ok: true } | { ok: fal
 
   const quotaLimit = getQuotaLimit(limits);
   if (input.analysesUsed >= quotaLimit) {
-    const periodLabel = limits.quotaPeriod === "day" ? "aujourd'hui" : "ce mois-ci";
-    const signupHint =
-      input.plan === "guest"
-        ? " Créez un compte gratuit pour 10 analyses/mois et la sélection Bbox."
-        : " Passez à un plan supérieur.";
     return {
       ok: false,
-      message: `Quota atteint (${quotaLimit} analyses ${periodLabel}).${signupHint}`,
+      messageKey: input.plan === "guest" ? "ERR_QUOTA_GUEST" : "ERR_QUOTA_USER",
+      messageParams: { limit: quotaLimit }
     };
   }
 

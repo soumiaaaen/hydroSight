@@ -8,10 +8,13 @@ import UpgradeModal from "@/components/UpgradeModal";
 import GuestBanner from "@/components/GuestBanner";
 import { api } from "@/services/api";
 import LogoutButton from "@/components/LogoutButton";
+import AdminNavLink from "@/components/AdminNavLink";
 import { logoutAndRedirect } from "@/services/auth";
 import { usePlan } from "@/hooks/usePlan";
 import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { useTranslations } from "next-intl";
 import "leaflet/dist/leaflet.css";
 
 const Map = dynamic(() => import("@/components/Map"), {
@@ -43,6 +46,11 @@ export default function DashboardPage() {
     isGuest,
   } = usePlan();
   const { isLoggedIn } = useAuth();
+  const t = useTranslations('Dashboard');
+  const tNav = useTranslations('Navigation');
+  const tCommon = useTranslations('Common');
+  const tMap = useTranslations('Map');
+  const tErrors = useTranslations('Errors');
 
   const [activeModule, setActiveModule] = useState("lu");
   const [activeMode, setActiveMode] = useState("point");
@@ -78,6 +86,7 @@ export default function DashboardPage() {
       dateDebut,
       dateFin,
       bbox: zoneSelection?.bbox,
+      zoneSelection,
       checkQuota: true,
     });
   }, [canAccess, activeModule, activeMode, dateDebut, dateFin, zoneSelection]);
@@ -91,10 +100,11 @@ export default function DashboardPage() {
       dateDebut,
       dateFin,
       bbox: zoneSelection.bbox,
+      zoneSelection,
       checkQuota: true,
     });
     if (!check.ok) {
-      setUpgradeMessage(check.message);
+      setUpgradeMessage(tErrors(check.messageKey as any, check.messageParams));
       return;
     }
 
@@ -205,7 +215,7 @@ export default function DashboardPage() {
         analysesLimit={analysesLimit}
         isModeAllowed={isModeAllowed}
         canAnalyzeByPlan={preAnalyzeCheck.ok}
-        planBlockReason={!preAnalyzeCheck.ok ? preAnalyzeCheck.message : null}
+        planBlockReason={!preAnalyzeCheck.ok ? tErrors(preAnalyzeCheck.messageKey as any, preAnalyzeCheck.messageParams) : null}
       />
 
       <div
@@ -240,9 +250,9 @@ export default function DashboardPage() {
             }}
           >
             {[
-              { id: "gw", label: "💧 Eaux Souterraines" },
-              { id: "sw", label: "🌊 Eaux de Surface" },
-              { id: "lu", label: "🌿 Occupation du Sol" },
+              { id: "gw", label: t('gw') },
+              { id: "sw", label: t('sw') },
+              { id: "lu", label: t('lu') },
             ].map((tab) => {
               const allowed = isModuleAllowed(tab.id);
               return (
@@ -290,6 +300,24 @@ export default function DashboardPage() {
               {theme === "dark" ? "☀️" : "🌙"}
             </button>
 
+            <div style={{ marginLeft: '8px' }}>
+              <LanguageSwitcher />
+            </div>
+
+            <AdminNavLink
+              style={{
+                marginLeft: 8,
+                textDecoration: "none",
+                color: "var(--text-muted)",
+                fontSize: 12,
+                fontWeight: 600,
+                padding: "8px 12px",
+                borderRadius: "20px",
+                border: "1px solid var(--glass-border)",
+                background: "var(--glass-bg)",
+              }}
+            />
+
             {isLoggedIn ? (
               <LogoutButton
                 onClick={() => logoutAndRedirect()}
@@ -298,7 +326,7 @@ export default function DashboardPage() {
             ) : (
               <Link
                 href="/login"
-                title="Se connecter"
+                title={tNav('login')}
                 style={{
                   ...iconButtonStyle,
                   marginLeft: 8,
@@ -343,10 +371,10 @@ export default function DashboardPage() {
                     textTransform: "uppercase",
                   }}
                 >
-                  STATUT : {analysisResult.decision.status}
+                  {t('status')} : {tMap(`status_${analysisResult.decision.status.toLowerCase()}` as any)}
                 </h3>
                 <p style={{ margin: "4px 0 0 0", fontSize: "14px", opacity: 0.95 }}>
-                  {analysisResult.decision.recommendation}
+                  {tMap(`rec_${analysisResult.decision.status.toLowerCase()}` as any)}
                 </p>
               </div>
               <div
@@ -369,6 +397,7 @@ export default function DashboardPage() {
             analysisStatus={analysisResult?.decision?.status || null}
             resolvedGeojson={resolvedGeojson}
             activeModule={activeModule}
+            isGuest={isGuest}
           />
         </div>
 
@@ -397,13 +426,13 @@ export default function DashboardPage() {
               }}
             >
               <p style={{ lineHeight: "1.6" }}>
-                Sélectionnez une zone et lancez l&apos;analyse pour le module{" "}
+                {t('select_zone')}{" "}
                 <strong style={{ color: "var(--foreground)" }}>
                   {activeModule === "gw"
-                    ? "Eaux Souterraines"
+                    ? t('gw').replace('💧 ', '')
                     : activeModule === "sw"
-                      ? "Eaux de Surface"
-                      : "Occupation du Sol"}
+                      ? t('sw').replace('🌊 ', '')
+                      : t('lu').replace('🌿 ', '')}
                 </strong>
                 .
               </p>
@@ -430,7 +459,7 @@ export default function DashboardPage() {
                   animation: "spin 1s linear infinite",
                 }}
               />
-              <p style={{ color: "var(--accent-primary)", fontWeight: "600" }}>Calcul en cours...</p>
+              <p style={{ color: "var(--accent-primary)", fontWeight: "600" }}>{t('calc')}</p>
               <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
             </div>
           )}

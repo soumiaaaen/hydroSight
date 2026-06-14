@@ -1,0 +1,377 @@
+{
+  "Navigation": {
+    "dashboard": "Tableau de bord",
+    "pricing": "Tarification",
+    "settings": "Paramètres",
+    "login": "Connexion",
+    "logout": "Déconnexion",
+    "admin": "Administration",
+    "features": "Fonctionnalités",
+    "how": "Comment ça marche",
+    "tech": "Technologie",
+    "usecases": "Cas d'usage",
+    "faq": "FAQ",
+    "try_free": "Essayer sans compte",
+    "get_started": "Commencer →"
+  },
+  "Landing": {
+    "hero_tag": "Propulsé par Google Earth Engine & Sentinel-2",
+    "hero_title1": "Intelligence Terrestre",
+    "hero_title2": "pour chaque décision",
+    "hero_desc": "Surveillez la végétation, les étendues d'eau et l'occupation du sol en temps réel grâce à l'analyse satellitaire par IA — d'une simple parcelle à un pays tout entier.",
+    "cta_dash": "Ouvrir le tableau de bord →",
+    "cta_guest": "Essayer sans compte",
+    "cta_create": "Créer un compte gratuit",
+    "cta_login": "Se connecter",
+    "stat_acc": "Précision de classification",
+    "stat_rev": "Revisite mondiale",
+    "stat_spd": "Vitesse d'analyse",
+    "trust": "Technologies de confiance",
+    "inv_tag": "Argument d'investissement",
+    "inv_title1": "Pourquoi GeoAI est le",
+    "inv_title2": "choix intelligent",
+    "inv_desc": "L'intelligence environnementale n'est plus un luxe — c'est un atout stratégique. Les organisations qui agissent sur les données terrestres en temps réel gagnent.",
+    "cap_tag": "Capacités",
+    "cap_title": "Conçu pour l'Intelligence Environnementale",
+    "cap_desc": "Une suite complète d'analyses géospatiales propulsée par l'imagerie Sentinel-2.",
+    "live_tag": "Démo en direct",
+    "live_title": "Voir la plateforme en action",
+    "work_tag": "Flux de travail",
+    "work_title": "Trois étapes vers l'intelligence",
+    "tech_tag": "Architecture",
+    "tech_title": "Stack technologique d'entreprise",
+    "use_tag": "Applications",
+    "use_title": "Qui bénéficie de GeoAI ?",
+    "faq_tag": "FAQ",
+    "faq_title": "Questions fréquentes",
+    "final_tag": "Commencez aujourd'hui",
+    "final_title1": "Prêt à voir la Terre",
+    "final_title2": "telle qu'elle est vraiment ?",
+    "final_desc": "Commencez à analyser les images satellites en quelques secondes. Aucune installation. Aucun matériel. Juste de l'intelligence.",
+    "inv_cards": [
+      {
+        "title": "10× Plus Rapide",
+        "desc": "Les études terrain prennent des semaines. GeoAI livre les mêmes infos en moins de 3s."
+      },
+      {
+        "title": "Réduction des Coûts",
+        "desc": "Remplacez les infrastructures coûteuses par l'intelligence satellitaire."
+      },
+      {
+        "title": "ROI Basé sur la Donnée",
+        "desc": "Les clients rapportent une amélioration de 15-30% des rendements."
+      }
+    ],
+    "feat_cards": [
+      {
+        "title": "Suivi de la Végétation",
+        "desc": "Calcul NDVI en temps réel. Détectez la santé et le stress de la végétation."
+      },
+      {
+        "title": "Occupation du Sol",
+        "desc": "Classification automatique par IA des forêts, cultures, zones urbaines, eau."
+      },
+      {
+        "title": "Analyse de l'Eau",
+        "desc": "Suivi de l'étendue de l'eau et des indicateurs de sécheresse."
+      },
+      {
+        "title": "Carte Interactive",
+        "desc": "Carte Leaflet avec sélection de points, zones et provinces."
+      },
+      {
+        "title": "Séries Temporelles",
+        "desc": "Suivi temporel sur des périodes personnalisées avec graphiques."
+      },
+      {
+        "title": "Sécurité Entreprise",
+        "desc": "Authentification JWT et contrôle d'accès basé sur les rôles."
+      }
+    ],
+    "work_cards": [
+      {
+        "title": "Sélectionnez votre zone",
+        "desc": "Choisissez une coordonnée, dessinez une zone ou sélectionnez une province."
+      },
+      {
+        "title": "Lancez l'analyse",
+        "desc": "Choisissez l'indicateur et déclenchez le calcul Google Earth Engine."
+      },
+      {
+        "title": "Agissez sur les résultats",
+        "desc": "Recevez des résultats visuels, des graphiques et des interprétations IA."
+      }
+    ],
+    "use_cards": [
+      {
+        "title": "Agriculture",
+        "desc": "Suivez la santé des cultures pour optimiser les rendements."
+      },
+      {
+        "title": "Ressources en Eau",
+        "desc": "Gérez l'étendue des eaux de surface et la sécheresse."
+      },
+      {
+        "title": "Gouvernement",
+        "desc": "Soutien décisionnel pour la régulation de l'utilisation des terres."
+      },
+      {
+        "title": "Recherche",
+        "desc": "Ensembles de données pour la science du climat."
+      },
+      {
+        "title": "ONG Conservation",
+        "desc": "Détectez la déforestation en temps quasi réel."
+      },
+      {
+        "title": "Investissement",
+        "desc": "Surveillez l'impact environnemental pour les portefeuilles ESG."
+      }
+    ],
+    "tech_cards": [
+      {
+        "label": "Frontend",
+        "items": [
+          "Next.js 14",
+          "React + TypeScript",
+          "Tailwind CSS",
+          "Leaflet",
+          "API REST"
+        ]
+      },
+      {
+        "label": "Backend",
+        "items": [
+          "FastAPI (Python)",
+          "Google Earth Engine",
+          "Services NDVI",
+          "API de zone",
+          "Sécurité JWT"
+        ]
+      },
+      {
+        "label": "Données",
+        "items": [
+          "Images Sentinel-2",
+          "Résolution 10m",
+          "Revisite 5 jours",
+          "Contrôle d'accès",
+          "Couches GeoJSON"
+        ]
+      }
+    ],
+    "faqs": [
+      {
+        "q": "Quelles données utilisez-vous ?",
+        "a": "Sentinel-2 via Google Earth Engine, résolution 10m."
+      },
+      {
+        "q": "Quelles échelles géographiques ?",
+        "a": "D'un point unique à l'échelle nationale."
+      },
+      {
+        "q": "Comment fonctionne l'IA ?",
+        "a": "FastAPI + GEE calculent en temps réel et renvoient les résultats."
+      },
+      {
+        "q": "Ai-je besoin d'un compte ?",
+        "a": "Non, une démo est disponible. Un compte gratuit débloque plus d'analyses."
+      },
+      {
+        "q": "Faites-vous des séries temporelles ?",
+        "a": "Oui, vous pouvez suivre n'importe quel indicateur dans le temps."
+      }
+    ],
+    "inv_market_tag": "Opportunité de Marché",
+    "inv_market_title": "Le marché mondial de l'analyse géospatiale est estimé à 115 Md$ d'ici 2030",
+    "inv_market_desc": "Le changement climatique, la sécurité alimentaire, la rareté de l'eau et la conformité ESG stimulent une demande sans précédent pour la surveillance environnementale en temps réel. GeoAI se trouve à l'intersection des quatre.",
+    "inv_market_cagr": "TCAC 2024–2030",
+    "live_desc": "Regardez une présentation réelle de la plateforme — de la sélection de zone aux résultats d'analyse par IA.",
+    "live_watch": "Regardez la présentation de la plateforme",
+    "live_click": "Cliquez n'importe où pour lire la vidéo de démonstration"
+  },
+  "Dashboard": {
+    "welcome": "Bon retour",
+    "analysesUsed": "Analyses utilisées",
+    "unlimited": "Illimité",
+    "startAnalysis": "Démarrer l'analyse",
+    "noData": "Aucune donnée disponible",
+    "gw": "💧 Eaux Souterraines",
+    "sw": "🌊 Eaux de Surface",
+    "lu": "🌿 Occupation du Sol",
+    "select_zone": "Sélectionnez une zone et lancez l'analyse pour le module",
+    "calc": "Calcul en cours...",
+    "status": "STATUT",
+    "score": "Score"
+  },
+  "Pricing": {
+    "title": "Choisissez votre plan",
+    "freePlan": "Plan Gratuit",
+    "proPlan": "Plan Pro",
+    "premiumPlan": "Plan Premium",
+    "contractB2C": "Individuel",
+    "contractB2B": "Entreprise",
+    "upgrade": "Passer à ce plan",
+    "features": "Fonctionnalités",
+    "current": "Plan actuel",
+    "popular": "POPULAIRE",
+    "unlimited": "Illimité",
+    "free": "Gratuit",
+    "months": "mois",
+    "modules": "Modules",
+    "zones": "Zones",
+    "bbox": "BBox max.",
+    "range": "Période max.",
+    "quota": "Analyses / mois",
+    "pdf": "Export PDF",
+    "subtitle": "Limites alignées sur le coût Earth Engine : zone, période et nombre d'analyses."
+  },
+  "Admin": {
+    "title": "Tableau de bord administrateur",
+    "users": "Gestion des utilisateurs",
+    "users_desc": "Gérer les comptes, rôles et statuts de la plateforme.",
+    "users_label": "Voir les utilisateurs",
+    "contracts": "Gérer les contrats",
+    "contracts_desc": "Gérer les contrats et organisations B2B/B2C.",
+    "contracts_label": "Voir les contrats",
+    "analytics": "Analyses de la plateforme",
+    "analytics_desc": "Consulter les statistiques d'utilisation de la plateforme.",
+    "analytics_label": "Voir les analyses"
+  },
+  "Common": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "error": "Une erreur est survenue",
+    "success": "Succès",
+    "language": "Langue"
+  },
+  "Sidebar": {
+    "title": "SÉLECTION DE ZONE 1",
+    "point": "Point GPS",
+    "bbox": "Bbox",
+    "province": "Province",
+    "region": "Région",
+    "national": "National",
+    "period": "PÉRIODE D'ANALYSE",
+    "start": "Début",
+    "end": "Fin",
+    "analyze_btn": "LANCER L'ANALYSE",
+    "plan_demo": "PLAN DÉMO",
+    "analyses_today": "aujourd'hui",
+    "analyses_month": "ce mois",
+    "signup": "S'inscrire",
+    "pro_required": "Disponible avec un plan Pro ou Premium — voir Tarifs",
+    "active_zone": "Zone active",
+    "date_error": "La date de fin doit être après la date de début.",
+    "duration": "Durée : {months} mois",
+    "see_offers": "Voir les offres",
+    "analyzing": "Analyse..."
+  },
+  "GuestBanner": {
+    "demo_mode": "Mode démo",
+    "demo_desc": "point GPS · occupation du sol · 3 mois max",
+    "free_account": "Compte gratuit → analyses illimitées",
+    "already_registered": "? Déjà inscrit"
+  },
+  "Map": {
+    "legend_water": "STATUT HYDRIQUE",
+    "allowed": "Ressources normales",
+    "moderated": "Stress modéré",
+    "prohibited": "Surexploitation",
+    "critical": "Crise sévère",
+    "legend_lu": "OCCUPATION DU SOL",
+    "forest": "Forêt dense",
+    "shrub": "Arbustes",
+    "grass": "Lande herbacée",
+    "crop": "Terres cultivées",
+    "urban": "Zone urbanisée",
+    "sparse": "Végétation éparse",
+    "water": "Eau permanente",
+    "bare": "Sol nu",
+    "legend_gw": "ANOMALIE SOUTERRAINE (GWSA)",
+    "gw_deficit": "Déficit (rouge)",
+    "gw_neutral": "Neutre",
+    "gw_surplus": "Surplus (bleu)",
+    "legend_sw": "SURFACES EN EAU",
+    "sw_open_water": "Eau libre (Sentinel-1 VV < -16 dB)",
+    "status_allowed": "AUTORISÉ",
+    "status_moderated": "MODÉRÉ",
+    "status_prohibited": "INTERDIT",
+    "status_critical": "CRITIQUE",
+    "rec_allowed": "Ressources en bon état. Utilisation normale autorisée.",
+    "rec_moderated": "Stress modéré détecté. Quotas d'irrigation recommandés.",
+    "rec_prohibited": "Surexploitation détectée. Nouveaux forages interdits.",
+    "rec_critical": "Crise hydrique sévère. Arrêt immédiat obligatoire."
+  },
+  "Charts": {
+    "months": [
+      "Jan",
+      "Fév",
+      "Mar",
+      "Avr",
+      "Mai",
+      "Jui",
+      "Jul",
+      "Aoû",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Déc"
+    ],
+    "lu_bare": "Sol nu",
+    "lu_crop": "Terres cult.",
+    "lu_sparse": "Végét. éparse",
+    "lu_shrub": "Arbustes",
+    "lu_forest": "Forêt dense",
+    "lu_grass": "Lande",
+    "lu_urban": "Zone urbaine",
+    "lu_water": "Eau perm.",
+    "gw_anomaly": "Anomalie Souterraine",
+    "gw_balance": "Bilan Hydrique (P-ET)",
+    "gw_trend": "Tendance Niveau",
+    "gw_precip": "Précipitations",
+    "trend_down": "↓ Baisse",
+    "gw_chart_anomaly": "Évolution GWSA (cm éq-eau)",
+    "gw_chart_balance": "Bilan Hydrique Mensuel (mm)",
+    "sw_extent": "Surface en Eau",
+    "sw_dam": "Niveau Barrages/Lacs",
+    "sw_precip": "Précipitations CHIRPS",
+    "sw_perm": "Eau Permanente (JRC)",
+    "sw_chart_extent": "Étendue Surfaces en Eau (km²)",
+    "sw_chart_precip": "Précipitations CHIRPS (mm/mois)",
+    "lu_ndvi": "NDVI Moyen",
+    "lu_ndwi": "NDWI Moyen",
+    "lu_irrigation": "Zone Irrigation",
+    "lu_agri": "Surface Agricole ESA",
+    "lu_chart_breakdown": "Répartition Occupation Sol (km²)",
+    "lu_chart_ndvi": "NDVI Mensuel (Sentinel-2)",
+    "lu_chart_ndwi": "NDWI Mensuel (Sentinel-2)",
+    "score_title": "Décomposition du Score",
+    "score_gw": "🌍 Eaux souterraines",
+    "score_sw": "💧 Eaux de surface",
+    "score_lu": "🌿 Occupation du sol",
+    "score_total": "Total:",
+    "err_pdf_pro": "L'export PDF est disponible à partir du plan Pro.",
+    "err_excel_pro": "L'export Excel est disponible à partir du plan Pro.",
+    "succ_pdf": "PDF téléchargé avec succès!",
+    "err_pdf": "Erreur lors de la génération du PDF",
+    "succ_excel": "Excel téléchargé avec succès!",
+    "err_excel": "Erreur lors de la génération du fichier Excel",
+    "btn_gen": "Génération...",
+    "btn_export_pdf": "📄 Exporter PDF",
+    "btn_pdf_pro": "📄 PDF (Pro)",
+    "btn_export_excel": "📊 Exporter Excel",
+    "btn_excel_pro": "📊 Excel (Pro)"
+  },
+  "Errors": {
+    "ERR_MODULE_NOT_INCLUDED": "Le module {module} n'est pas inclus dans le plan {plan}.",
+    "ERR_MODE_NOT_INCLUDED": "La sélection de zone {mode} n'est pas disponible dans le plan {plan}.",
+    "ERR_GUEST_REGION": "En mode Démo, seule la région de Tadla-Azilal est disponible.",
+    "ERR_GUEST_PROVINCE": "En mode Démo, seule la province de Béni Mellal est disponible.",
+    "ERR_MAX_MONTHS": "La période sélectionnée dépasse le maximum autorisé ({max} mois) pour le plan {plan}.",
+    "ERR_BBOX_GUEST": "Le dessin libre de zone n'est pas disponible en mode Démo.",
+    "ERR_BBOX_TOO_LARGE": "La zone sélectionnée ({area} km²) dépasse la limite maximale autorisée ({max} km²).",
+    "ERR_QUOTA_GUEST": "Vous avez atteint la limite du mode Démo.",
+    "ERR_QUOTA_USER": "Vous avez atteint votre limite mensuelle d'analyses ({limit})."
+  }
+}

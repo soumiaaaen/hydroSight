@@ -8,45 +8,41 @@ import {
   XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine, Cell
 } from "recharts";
 import { exportFullExcel, exportFullPdf } from "../services/reportExport";
+import { useTranslations } from "next-intl";
 
-const MONTHS = ["Jan","Fév","Mar","Avr","Mai","Jui","Jul","Aoû","Sep","Oct","Nov","Déc"];
-
-const MOCK = {
-  status: "MODERATED", score: 3,
-  gw: {
-    storageAnomaly: -8.4, rechargeRate: -50.26, trend: "baisse", precip: 187.3,
-    tsGWSA:    [-6.2,-7.1,-5.8,-6.9,-8.1,-9.4,-10.2,-11.0,-9.7,-8.4,-7.6,-8.4],
-    tsRecharge:[12.3,-8.1,24.6,-15.2,-42.8,-89.4,-112.1,-98.7,-67.3,-12.4,8.7,-50.3]
-  },
-  sw: {
-    waterExtent:342.7, barrageLevel:38.2, precip:23.4, waterOccurrence:12.3,
-    tsExtent:  [420,398,445,412,380,342,298,276,310,355,378,342],
-    tsPrecip:  [42,38,31,18,8,2,0,1,12,24,36,23]
-  },
-  lu: {
-    ndvi:0.34, ndwi:0.09, irrigationArea:1240, croplandArea:8320,
-    breakdown:[
-      {name:"Sol nu",        value:187000, color:"#fae6a0"},
-      {name:"Terres cult.",  value:83200,  color:"#fa0000"},
-      {name:"Végét. éparse", value:95000,  color:"#0096a0"},
-      {name:"Arbustes",      value:64000,  color:"#ffbb22"},
-      {name:"Forêt dense",   value:42300,  color:"#006400"},
-      {name:"Lande",         value:28000,  color:"#f096ff"},
-      {name:"Zone urbaine",  value:12100,  color:"#b4b4b4"},
-      {name:"Eau perm.",     value:3420,   color:"#0064c8"}
-    ],
-    tsNDVI: [0.18,0.22,0.31,0.41,0.48,0.38,0.28,0.24,0.29,0.35,0.32,0.34],
-    tsNDWI: [0.14,0.16,0.18,0.21,0.15,0.09,0.05,0.04,0.07,0.10,0.12,0.09]
-  },
-  scoring: {gw:2, sw:1, lu:0, total:3}
+const getMockData = (t: any) => {
+  const MONTHS = t.raw('months') || ["Jan","Fév","Mar","Avr","Mai","Jui","Jul","Aoû","Sep","Oct","Nov","Déc"];
+  return {
+    MONTHS,
+    status: "MODERATED", score: 3,
+    gw: {
+      storageAnomaly: -8.4, rechargeRate: -50.26, trend: "baisse", precip: 187.3,
+      tsGWSA:    [-6.2,-7.1,-5.8,-6.9,-8.1,-9.4,-10.2,-11.0,-9.7,-8.4,-7.6,-8.4],
+      tsRecharge:[12.3,-8.1,24.6,-15.2,-42.8,-89.4,-112.1,-98.7,-67.3,-12.4,8.7,-50.3]
+    },
+    sw: {
+      waterExtent:342.7, barrageLevel:38.2, precip:23.4, waterOccurrence:12.3,
+      tsExtent:  [420,398,445,412,380,342,298,276,310,355,378,342],
+      tsPrecip:  [42,38,31,18,8,2,0,1,12,24,36,23]
+    },
+    lu: {
+      ndvi:0.34, ndwi:0.09, irrigationArea:1240, croplandArea:8320,
+      breakdown:[
+        {name: t('lu_bare'),   value:187000, color:"#fae6a0"},
+        {name: t('lu_crop'),   value:83200,  color:"#fa0000"},
+        {name: t('lu_sparse'), value:95000,  color:"#0096a0"},
+        {name: t('lu_shrub'),  value:64000,  color:"#ffbb22"},
+        {name: t('lu_forest'), value:42300,  color:"#006400"},
+        {name: t('lu_grass'),  value:28000,  color:"#f096ff"},
+        {name: t('lu_urban'),  value:12100,  color:"#b4b4b4"},
+        {name: t('lu_water'),  value:3420,   color:"#0064c8"}
+      ],
+      tsNDVI: [0.18,0.22,0.31,0.41,0.48,0.38,0.28,0.24,0.29,0.35,0.32,0.34],
+      tsNDWI: [0.14,0.16,0.18,0.21,0.15,0.09,0.05,0.04,0.07,0.10,0.12,0.09]
+    },
+    scoring: {gw:2, sw:1, lu:0, total:3}
+  };
 };
-
-const gwsaData = MONTHS.map((m, i) => ({ month: m, value: MOCK.gw.tsGWSA[i] }));
-const rechargeData = MONTHS.map((m, i) => ({ month: m, value: MOCK.gw.tsRecharge[i] }));
-const extentData = MONTHS.map((m, i) => ({ month: m, value: MOCK.sw.tsExtent[i] }));
-const precipData = MONTHS.map((m, i) => ({ month: m, value: MOCK.sw.tsPrecip[i] }));
-const ndviData = MONTHS.map((m, i) => ({ month: m, value: MOCK.lu.tsNDVI[i] }));
-const ndwiData = MONTHS.map((m, i) => ({ month: m, value: MOCK.lu.tsNDWI[i] }));
 
 function MetricCard({ title, value, color, source }: any) {
   return (
@@ -77,34 +73,45 @@ export default function Charts({
   canExportExcel = false,
   onUpgradeRequired,
 }: ChartProps) {
+  const t = useTranslations('Charts');
   const [exportingPDF, setExportingPDF] = useState(false);
   const [exportingExcel, setExportingExcel] = useState(false);
 
+  const mockData = getMockData(t);
+  const { MONTHS, gw, sw, lu, scoring, status, score } = mockData;
+
+  const gwsaData = MONTHS.map((m: string, i: number) => ({ month: m, value: gw.tsGWSA[i] }));
+  const rechargeData = MONTHS.map((m: string, i: number) => ({ month: m, value: gw.tsRecharge[i] }));
+  const extentData = MONTHS.map((m: string, i: number) => ({ month: m, value: sw.tsExtent[i] }));
+  const precipData = MONTHS.map((m: string, i: number) => ({ month: m, value: sw.tsPrecip[i] }));
+  const ndviData = MONTHS.map((m: string, i: number) => ({ month: m, value: lu.tsNDVI[i] }));
+  const ndwiData = MONTHS.map((m: string, i: number) => ({ month: m, value: lu.tsNDWI[i] }));
+
   const buildReportData = () => ({
-    generatedAt: new Date().toLocaleString("fr-FR"),
+    generatedAt: new Date().toLocaleString(),
     zoneSelection,
     dateDebut,
     dateFin,
-    status: MOCK.status,
-    score: MOCK.score,
-    gw: MOCK.gw,
-    sw: MOCK.sw,
-    lu: MOCK.lu,
-    scoring: MOCK.scoring,
+    status: status,
+    score: score,
+    gw: gw,
+    sw: sw,
+    lu: lu,
+    scoring: scoring,
     months: MONTHS,
   });
 
   const handleExportPDF = async () => {
     if (!canExportPdf) {
-      onUpgradeRequired?.("L'export PDF est disponible à partir du plan Pro.");
+      onUpgradeRequired?.(t('err_pdf_pro'));
       return;
     }
     setExportingPDF(true);
     try {
       await exportFullPdf(buildReportData());
-      alert("PDF téléchargé avec succès!");
+      alert(t('succ_pdf'));
     } catch {
-      alert("Erreur lors de la génération du PDF");
+      alert(t('err_pdf'));
     } finally {
       setExportingPDF(false);
     }
@@ -112,15 +119,15 @@ export default function Charts({
 
   const handleExportExcel = () => {
     if (!canExportExcel) {
-      onUpgradeRequired?.("L'export Excel est disponible à partir du plan Pro.");
+      onUpgradeRequired?.(t('err_excel_pro'));
       return;
     }
     setExportingExcel(true);
     try {
       exportFullExcel(buildReportData());
-      alert("Excel téléchargé avec succès!");
+      alert(t('succ_excel'));
     } catch {
-      alert("Erreur lors de la génération du fichier Excel");
+      alert(t('err_excel'));
     } finally {
       setExportingExcel(false);
     }
@@ -133,14 +140,14 @@ export default function Charts({
       {activeModule === "gw" && (
         <div style={{ display: "flex", flexDirection: "column", gap: "16px", animation: "fadeIn 200ms ease-in" }}>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-            <MetricCard title="Anomalie Souterraine" value="-8.4 cm" color="#F59E0B" source="GRACE/NASA" />
-            <MetricCard title="Bilan Hydrique (P−ET)" value="-50.3 mm" color="#EF4444" source="GLDAS" />
-            <MetricCard title="Tendance Niveau" value="↓ Baisse" color="#EF4444" source="GRACE/NASA" />
-            <MetricCard title="Précipitations" value="187.3 mm" color="#F59E0B" source="CHIRPS" />
+            <MetricCard title={t('gw_anomaly')} value="-8.4 cm" color="#F59E0B" source="GRACE/NASA" />
+            <MetricCard title={t('gw_balance')} value="-50.3 mm" color="#EF4444" source="GLDAS" />
+            <MetricCard title={t('gw_trend')} value={t('trend_down')} color="#EF4444" source="GRACE/NASA" />
+            <MetricCard title={t('gw_precip')} value="187.3 mm" color="#F59E0B" source="CHIRPS" />
           </div>
 
           <div>
-            <h4 style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "8px" }}>Évolution GWSA (cm éq-eau)</h4>
+            <h4 style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "8px" }}>{t('gw_chart_anomaly')}</h4>
             <div style={{ width: "100%", height: 180 }}>
               <ResponsiveContainer>
                 <AreaChart data={gwsaData}>
@@ -155,7 +162,7 @@ export default function Charts({
           </div>
 
           <div>
-            <h4 style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "8px" }}>Bilan Hydrique Mensuel (mm)</h4>
+            <h4 style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "8px" }}>{t('gw_chart_balance')}</h4>
             <div style={{ width: "100%", height: 160 }}>
               <ResponsiveContainer>
                 <BarChart data={rechargeData}>
@@ -163,7 +170,7 @@ export default function Charts({
                   <YAxis tick={{ fontSize: 10, fill: "var(--text-muted)" }} width={30} />
                   <Tooltip contentStyle={{ background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "8px", boxShadow: "0 4px 15px rgba(0,0,0,0.2)" }} itemStyle={{ fontWeight: "600" }} />
                   <Bar dataKey="value">
-                    {rechargeData.map((entry, index) => (
+                    {rechargeData.map((entry: any, index: number) => (
                       <Cell key={`cell-${index}`} fill={entry.value > 0 ? "#10B981" : "#EF4444"} />
                     ))}
                   </Bar>
@@ -178,14 +185,14 @@ export default function Charts({
       {activeModule === "sw" && (
         <div style={{ display: "flex", flexDirection: "column", gap: "16px", animation: "fadeIn 200ms ease-in" }}>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-            <MetricCard title="Surface en Eau" value="342.7 km²" color="#F59E0B" source="Sentinel-1" />
-            <MetricCard title="Niveau Barrages/Lacs" value="38.2 %" color="#F59E0B" source="JRC Water" />
-            <MetricCard title="Précipitations CHIRPS" value="23.4 mm" color="#EF4444" source="CHIRPS" />
-            <MetricCard title="Eau Permanente (JRC)" value="12.3 %" color="#F59E0B" source="JRC" />
+            <MetricCard title={t('sw_extent')} value="342.7 km²" color="#F59E0B" source="Sentinel-1" />
+            <MetricCard title={t('sw_dam')} value="38.2 %" color="#F59E0B" source="JRC Water" />
+            <MetricCard title={t('sw_precip')} value="23.4 mm" color="#EF4444" source="CHIRPS" />
+            <MetricCard title={t('sw_perm')} value="12.3 %" color="#F59E0B" source="JRC" />
           </div>
 
           <div>
-            <h4 style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "8px" }}>Étendue Surfaces en Eau (km²)</h4>
+            <h4 style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "8px" }}>{t('sw_chart_extent')}</h4>
             <div style={{ width: "100%", height: 180 }}>
               <ResponsiveContainer>
                 <LineChart data={extentData}>
@@ -199,7 +206,7 @@ export default function Charts({
           </div>
 
           <div>
-            <h4 style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "8px" }}>Précipitations CHIRPS (mm/mois)</h4>
+            <h4 style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "8px" }}>{t('sw_chart_precip')}</h4>
             <div style={{ width: "100%", height: 160 }}>
               <ResponsiveContainer>
                 <BarChart data={precipData}>
@@ -218,22 +225,22 @@ export default function Charts({
       {activeModule === "lu" && (
         <div style={{ display: "flex", flexDirection: "column", gap: "16px", animation: "fadeIn 200ms ease-in" }}>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-            <MetricCard title="NDVI Moyen" value="0.34" color="#F59E0B" source="Sentinel-2" />
-            <MetricCard title="NDWI Moyen" value="0.09" color="#F59E0B" source="Sentinel-2" />
-            <MetricCard title="Zone Irrigation" value="1 240 km²" color="#EF4444" source="ESA" />
-            <MetricCard title="Surface Agricole ESA" value="8 320 km²" color="#F59E0B" source="ESA" />
+            <MetricCard title={t('lu_ndvi')} value="0.34" color="#F59E0B" source="Sentinel-2" />
+            <MetricCard title={t('lu_ndwi')} value="0.09" color="#F59E0B" source="Sentinel-2" />
+            <MetricCard title={t('lu_irrigation')} value="1 240 km²" color="#EF4444" source="ESA" />
+            <MetricCard title={t('lu_agri')} value="8 320 km²" color="#F59E0B" source="ESA" />
           </div>
 
           <div>
-            <h4 style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "8px" }}>Répartition Occupation Sol (km²)</h4>
+            <h4 style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "8px" }}>{t('lu_chart_breakdown')}</h4>
             <div style={{ width: "100%", height: 220 }}>
               <ResponsiveContainer>
-                <BarChart layout="vertical" data={MOCK.lu.breakdown} margin={{ top: 0, right: 20, left: 20, bottom: 0 }}>
+                <BarChart layout="vertical" data={lu.breakdown} margin={{ top: 0, right: 20, left: 20, bottom: 0 }}>
                   <XAxis type="number" tick={{ fontSize: 10, fill: "var(--text-muted)" }} />
                   <YAxis type="category" dataKey="name" width={80} tick={{ fontSize: 10, fill: "var(--text-muted)" }} />
                   <Tooltip contentStyle={{ background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "8px", boxShadow: "0 4px 15px rgba(0,0,0,0.2)" }} itemStyle={{ fontWeight: "600" }} />
                   <Bar dataKey="value">
-                    {MOCK.lu.breakdown.map((entry, index) => (
+                    {lu.breakdown.map((entry: any, index: number) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Bar>
@@ -243,7 +250,7 @@ export default function Charts({
           </div>
 
           <div>
-            <h4 style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "8px" }}>NDVI Mensuel (Sentinel-2)</h4>
+            <h4 style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "8px" }}>{t('lu_chart_ndvi')}</h4>
             <div style={{ width: "100%", height: 160 }}>
               <ResponsiveContainer>
                 <LineChart data={ndviData}>
@@ -259,7 +266,7 @@ export default function Charts({
           </div>
 
           <div>
-            <h4 style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "8px" }}>NDWI Mensuel (Sentinel-2)</h4>
+            <h4 style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "8px" }}>{t('lu_chart_ndwi')}</h4>
             <div style={{ width: "100%", height: 160 }}>
               <ResponsiveContainer>
                 <LineChart data={ndwiData}>
@@ -277,12 +284,12 @@ export default function Charts({
 
       {/* SCORING BREAKDOWN */}
       <div style={{ background: "var(--glass-bg)", border: "1px solid var(--border-color)", padding: "20px", borderRadius: "10px", marginTop: "10px", boxShadow: "0 4px 6px rgba(0,0,0,0.1)" }}>
-        <h4 style={{ margin: "0 0 16px 0", fontSize: "14px", fontWeight: "700", color: "var(--foreground)", textTransform: "uppercase", letterSpacing: "0.5px" }}>Décomposition du Score</h4>
+        <h4 style={{ margin: "0 0 16px 0", fontSize: "14px", fontWeight: "700", color: "var(--foreground)", textTransform: "uppercase", letterSpacing: "0.5px" }}>{t('score_title')}</h4>
         
         <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", color: "var(--text-muted)", marginBottom: "4px" }}>
-              <span>🌍 Eaux souterraines</span>
+              <span>{t('score_gw')}</span>
               <span>+2 pts</span>
             </div>
             <div style={{ width: "100%", height: "4px", backgroundColor: "#374151", borderRadius: "2px" }}>
@@ -291,7 +298,7 @@ export default function Charts({
           </div>
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", color: "var(--text-muted)", marginBottom: "4px" }}>
-              <span>💧 Eaux de surface</span>
+              <span>{t('score_sw')}</span>
               <span>+1 pts</span>
             </div>
             <div style={{ width: "100%", height: "4px", backgroundColor: "#374151", borderRadius: "2px" }}>
@@ -300,7 +307,7 @@ export default function Charts({
           </div>
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", color: "var(--text-muted)", marginBottom: "4px" }}>
-              <span>🌿 Occupation du sol</span>
+              <span>{t('score_lu')}</span>
               <span>+0 pts</span>
             </div>
             <div style={{ width: "100%", height: "4px", backgroundColor: "#374151", borderRadius: "2px" }}>
@@ -310,7 +317,7 @@ export default function Charts({
         </div>
         
         <div style={{ borderTop: "1px solid #374151", marginTop: "12px", paddingTop: "12px", display: "flex", justifyContent: "space-between", color: "var(--foreground)", fontWeight: "bold", fontSize: "14px" }}>
-          <span>Total:</span>
+          <span>{t('score_total')}</span>
           <span>3 / 10</span>
         </div>
       </div>
@@ -336,7 +343,7 @@ export default function Charts({
             e.currentTarget.style.color = "#00C9B1";
           }}
         >
-          {exportingPDF ? "Génération..." : canExportPdf ? "📄 Exporter PDF" : "📄 PDF (Pro)"}
+          {exportingPDF ? t('btn_gen') : canExportPdf ? t('btn_export_pdf') : t('btn_pdf_pro')}
         </button>
         <button
           type="button"
@@ -357,7 +364,7 @@ export default function Charts({
             e.currentTarget.style.color = "#00C9B1";
           }}
         >
-          {exportingExcel ? "Génération..." : canExportExcel ? "📊 Exporter Excel" : "📊 Excel (Pro)"}
+          {exportingExcel ? t('btn_gen') : canExportExcel ? t('btn_export_excel') : t('btn_excel_pro')}
         </button>
       </div>
 

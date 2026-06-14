@@ -12,8 +12,8 @@
 ## One-time Supabase setup
 
 1. Open [Supabase Dashboard](https://supabase.com/dashboard) → your project → **SQL Editor**.
-2. Run: `supabase/migrations/001_plans.sql` and `002_guest_usage.sql`
-3. Confirm tables `profiles`, `usage_monthly`, and `guest_usage` exist.
+2. Run: `supabase/migrations/001_plans.sql`, `002_guest_usage.sql`, `003_add_roles_and_contracts.sql`, and `004_admin_rls_helper.sql`
+3. Confirm tables `profiles`, `usage_monthly`, `guest_usage`, and `organizations` exist.
 
 ## Backend environment
 
@@ -46,6 +46,34 @@ where id = 'USER_UUID_HERE';
 ```
 
 Valid profile plans: `free`, `pro`, `premium`.
+
+## Roles & admin access
+
+`profiles.role` is either `user` (default) or `admin`.
+
+### Create the first admin (development only)
+
+1. Set `ADMIN_SETUP_SECRET` in the frontend environment.
+2. Ensure `SUPABASE_SERVICE_ROLE_KEY` is set.
+3. Call the setup endpoint with the secret header:
+
+```bash
+curl -X POST http://localhost:3000/api/admin/setup \
+  -H "x-admin-setup-secret: YOUR_SECRET"
+```
+
+This endpoint is disabled in production. For production, promote a user via SQL:
+
+```sql
+update public.profiles
+set role = 'admin', contract_type = 'b2b', plan = 'premium'
+where id = 'USER_UUID_HERE';
+```
+
+### Admin API (backend)
+
+- `GET /admin/me` — current user's role (registered JWT)
+- `GET /admin/users` — list profiles (admin JWT only)
 
 ## Frontend
 
