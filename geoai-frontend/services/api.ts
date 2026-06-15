@@ -5,23 +5,27 @@ import { getApiBaseUrl } from "@/lib/apiBase";
 const BASE_URL = getApiBaseUrl();
 
 async function authHeaders(): Promise<Record<string, string>> {
-  const { data: { session: existing } } = await supabase.auth.getSession();
-  if (existing?.access_token) {
-    const { data: refreshData } = await supabase.auth.refreshSession();
-    const session = refreshData.session ?? existing;
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    console.log("[authHeaders] session:", session?.access_token ? "present" : "null");
+
     if (session?.access_token) {
       return {
         "Content-Type": "application/json",
         Authorization: `Bearer ${session.access_token}`,
       };
     }
-  }
 
-  const guestToken = await ensureGuestSession();
-  return {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${guestToken}`,
-  };
+    console.log("[authHeaders] falling back to guest session");
+    const guestToken = await ensureGuestSession();
+    return {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${guestToken}`,
+    };
+  } catch (err) {
+    console.error("[authHeaders] THREW:", err);
+    throw err;
+  }
 }
 
 async function parseError(res: Response, endpoint: string): Promise<Error> {
@@ -40,26 +44,25 @@ async function parseError(res: Response, endpoint: string): Promise<Error> {
 
 export const api = {
   get: async (endpoint: string) => {
-    const res = await fetch(`${BASE_URL}${endpoint}`, {
-      headers: await authHeaders(),
-    });
-
+    const headers = await authHeaders();
+    console.log("[api.get]", endpoint);
+    const res = await fetch(`${BASE_URL}${endpoint}`, { headers });
     if (!res.ok) throw await parseError(res, endpoint);
     return res.json();
   },
 
   post: async (endpoint: string, body: object) => {
+    const headers = await authHeaders();
+    console.log("[api.post]", endpoint, body);
     const res = await fetch(`${BASE_URL}${endpoint}`, {
       method: "POST",
-      headers: await authHeaders(),
+      headers,
       body: JSON.stringify(body),
     });
-
     if (!res.ok) throw await parseError(res, endpoint);
     return res.json();
   },
 
-  /** Guest session bootstrap (no auth header required). */
   postPublic: async (endpoint: string, body: object) => {
     const res = await fetch(`${BASE_URL}${endpoint}`, {
       method: "POST",
