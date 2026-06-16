@@ -41,6 +41,13 @@ export function usePlan() {
     return () => subscription.unsubscribe();
   }, [refresh]);
 
+  const applyUsageFromResponse = useCallback(
+    (usage: { analysesUsed: number; analysesLimit: number }) => {
+      setSub((prev) => (prev ? { ...prev, ...usage } : prev));
+    },
+    []
+  );
+
   const plan: PlanId = sub?.plan ?? "guest";
   const limits = getLimits(plan);
   const analysesUsed = sub?.analysesUsed ?? 0;
@@ -87,6 +94,7 @@ export function usePlan() {
     quotaRemaining,
     isGuest,
     refresh,
+    applyUsageFromResponse,
     canAccess,
     isModuleAllowed,
     isModeAllowed,

@@ -37,9 +37,12 @@ class GEEService:
 
     @staticmethod
     def _zone_key(zone) -> str:
-        """Stable string key for a zone geometry (used for cache lookups)."""
         try:
-            return str(zone.bounds().getInfo())
+            info = zone.getInfo()
+            return json.dumps({
+                "type": info.get("type"),
+                "coordinates": info.get("coordinates"),
+            }, sort_keys=True)
         except Exception:
             return "global_fallback"
 
@@ -365,6 +368,12 @@ class GEEService:
 
         # ── 2. Simplify geometry ──────────────────────────────────────────────
         zone = GEEService._simplify(zone_geometry)
+
+        try:
+            if zone.type().getInfo() == "Point":
+                zone = zone.buffer(500)  # 500m radius → pixels exist at scale=100
+        except Exception:
+            pass
 
         # ── 3. Prime GWSA cache (no-op if already cached) ────────────────────
         ref_mean = GEEService._get_gwsa_ref_mean(zone)

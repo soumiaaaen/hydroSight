@@ -175,11 +175,13 @@ class SubscriptionService:
             return self.increment_guest_daily_usage(guest_uuid_from_principal(principal_id))
 
         if not self.configured:
+            print("[increment_usage] NOT CONFIGURED — returning 1 without writing")
             return 1
 
         ym = current_year_month()
         current = self.get_monthly_usage(principal_id, ym)
         new_count = current + 1
+        print(f"[increment_usage] principal={principal_id} ym={ym} current={current} new_count={new_count}")
 
         url = f"{self.base_url}/rest/v1/usage_monthly"
         headers = {
@@ -199,6 +201,7 @@ class SubscriptionService:
                 params={"on_conflict": "user_id,year_month"},
                 json=payload,
             )
+            print(f"[increment_usage] response: {r.status_code} {r.text}")
             r.raise_for_status()
 
         return new_count

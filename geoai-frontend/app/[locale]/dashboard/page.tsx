@@ -37,6 +37,7 @@ export default function DashboardPage() {
     analysesUsed,
     analysesLimit,
     refresh: refreshPlan,
+    applyUsageFromResponse,
     canAccess,
     isModuleAllowed,
     isModeAllowed,
@@ -124,7 +125,16 @@ export default function DashboardPage() {
       });
       setAnalysisResult(result);
       setAnalyzedParams({ zoneSelection, dateDebut, dateFin });
-      await refreshPlan();
+
+      // Update quota counter directly from the response (no extra round-trip needed)
+      if (result.usage) {
+        applyUsageFromResponse({
+          analysesUsed: result.usage.analysesUsed,
+          analysesLimit: result.usage.analysesLimit,
+        });
+      } else {
+        await refreshPlan();
+      }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Une erreur s'est produite lors de l'analyse.";
       if (
