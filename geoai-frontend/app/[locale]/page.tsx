@@ -103,7 +103,6 @@ function DemoVideo({ tLiveWatch, tLiveClick }: { tLiveWatch?: string, tLiveClick
         ref={videoRef}
         autoPlay
         loop
-        muted
         playsInline
         style={{
           width: "100%",
