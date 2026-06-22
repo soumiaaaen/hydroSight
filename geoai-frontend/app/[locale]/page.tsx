@@ -607,7 +607,7 @@ export default function LandingPage() {
       <footer style={{ borderTop: "1px solid rgba(255,255,255,0.05)", padding: "32px 48px" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 13, color: "rgba(255,255,255,0.3)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, fontWeight: 600, color: "rgba(255,255,255,0.5)" }}>
-            <span>🌍</span> GeoAI Platform
+            <span>🌍</span> Hydrosight Platform
           </div>
           <div style={{ display: "flex", gap: 24 }}>
             {["Features", "Tech", "FAQ"].map(l => (

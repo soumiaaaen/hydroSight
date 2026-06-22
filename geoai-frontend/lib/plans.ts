@@ -56,8 +56,8 @@ export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
   },
   pro: {
     label: "Pro",
-    priceMonthly: 39,
-    priceLabel: "39 €/mois",
+    priceMonthly: 433,
+    priceLabel: "$100/week",
     modules: ["gw", "sw", "lu"],
     modes: ["point", "bbox", "province"],
     maxBBoxKm2: null,
@@ -72,8 +72,8 @@ export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
   },
   premium: {
     label: "Premium",
-    priceMonthly: 129,
-    priceLabel: "129 €/mois",
+    priceMonthly: 1000,
+    priceLabel: "$1000/month",
     modules: ["gw", "sw", "lu"],
     modes: ["point", "bbox", "province", "region", "national"],
     maxMonthsRange: null,
